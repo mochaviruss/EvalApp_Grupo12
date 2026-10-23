@@ -40,10 +40,8 @@ android {
 }
 
 dependencies {
-    // Navegación entre pantallas y ViewModel (Guías 10 y 11)
     implementation("androidx.navigation:navigation-compose:2.9.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
-    // Íconos (igual que en los ejemplos de clases)
     implementation("androidx.compose.material:material-icons-extended")
 
     implementation(platform(libs.androidx.compose.bom))
