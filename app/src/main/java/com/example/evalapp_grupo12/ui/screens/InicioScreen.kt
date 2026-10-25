@@ -1,5 +1,9 @@
 package com.example.evalapp_grupo12.ui.screens
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AssignmentTurnedIn
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -28,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -41,6 +47,7 @@ fun InicioScreen(
 ) {
     val usuario by sesionViewModel.usuario.collectAsState()
     var mostrarAyuda by remember { mutableStateOf(false) }
+    val contexto = LocalContext.current
 
     val usuarioActual = usuario ?: return
 
@@ -102,6 +109,19 @@ fun InicioScreen(
                         Text("1. Toca + para cargar un documento PDF o Word.")
                         Text("2. En Mis documentos toca el ojo para verlo.")
                         Text("3. Toca el basurero para eliminarlo.")
+                    }
+
+                    TextButton(onClick = {
+                        val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", "+56912345678", null))
+
+                        try {
+                            contexto.startActivity(intent)
+                        } catch (e: ActivityNotFoundException) {
+                            Toast.makeText(contexto, "No hay una aplicación de teléfono disponible", Toast.LENGTH_SHORT).show()
+                        }
+                    }) {
+                        Icon(Icons.Filled.Phone, contentDescription = null)
+                        Text(" Llamar a soporte")
                     }
                 }
             }
