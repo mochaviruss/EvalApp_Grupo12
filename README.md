@@ -19,6 +19,7 @@ Lo que hace la app:
 - ver los documentos
 - eliminar documentos
 - cerrar sesión
+- llamar a soporte (abre la app de teléfono)
 
 Está hecha en Kotlin con Jetpack Compose y los datos se guardan con SQLite. Todos los datos son de prueba.
 
