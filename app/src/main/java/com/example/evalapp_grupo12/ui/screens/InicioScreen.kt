@@ -20,8 +20,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.evalapp_grupo12.logic.CalculadoraNota
 import com.example.evalapp_grupo12.ui.components.MenuApp
+import com.example.evalapp_grupo12.viewmodel.ClimaViewModel
 import com.example.evalapp_grupo12.viewmodel.EvaluacionViewModel
 import com.example.evalapp_grupo12.viewmodel.EvaluarViewModel
 import com.example.evalapp_grupo12.viewmodel.SesionViewModel
@@ -51,10 +55,12 @@ fun InicioScreen(
     navController: NavController,
     sesionViewModel: SesionViewModel,
     evaluacionViewModel: EvaluacionViewModel,
-    evaluarViewModel: EvaluarViewModel
+    evaluarViewModel: EvaluarViewModel,
+    climaViewModel: ClimaViewModel
 ) {
     val usuario by sesionViewModel.usuario.collectAsState()
     val estado by evaluacionViewModel.estado.collectAsStateWithLifecycle()
+    val estadoClima by climaViewModel.estado.collectAsStateWithLifecycle()
     var mostrarAyuda by remember { mutableStateOf(false) }
     val contexto = LocalContext.current
 
@@ -105,6 +111,44 @@ fun InicioScreen(
 
             estado.error?.let {
                 Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.WbSunny, contentDescription = null)
+                        Text(" Clima para evaluar en terreno", fontWeight = FontWeight.Bold)
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    val clima = estadoClima.clima
+
+                    if (estadoClima.cargando) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                    } else if (estadoClima.error != null) {
+                        Text(estadoClima.error ?: "", color = MaterialTheme.colorScheme.error)
+                        TextButton(onClick = { climaViewModel.cargarClima() }) {
+                            Text("Reintentar")
+                        }
+                    } else if (clima != null) {
+                        Text("${clima.temperatura} °C - ${clima.descripcion}", style = MaterialTheme.typography.titleLarge)
+                        Text("Viento: ${clima.viento} km/h")
+                        Text(
+                            text = if (clima.aptoParaTerreno) "Apto para evaluar en terreno"
+                                   else "No se recomienda evaluar en terreno",
+                            fontWeight = FontWeight.Bold,
+                            color = if (clima.aptoParaTerreno) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.error
+                        )
+                        Text("Datos: Open-Meteo", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
