@@ -1,21 +1,21 @@
 package com.example.evalapp_grupo12.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.evalapp_grupo12.data.UsuarioRepository
+import com.example.evalapp_grupo12.logic.Validaciones
 import com.example.evalapp_grupo12.model.EditarUsuarioErrores
 import com.example.evalapp_grupo12.model.EditarUsuarioUiState
 import com.example.evalapp_grupo12.model.Usuario
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class EditarUsuarioViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = UsuarioRepository(application)
+class EditarUsuarioViewModel(private val repository: UsuarioRepository) : ViewModel() {
 
     private val _estado = MutableStateFlow(EditarUsuarioUiState())
-    val estado: StateFlow<EditarUsuarioUiState> = _estado
+    val estado: StateFlow<EditarUsuarioUiState> = _estado.asStateFlow()
 
     fun cargarDatos(usuario: Usuario) {
         _estado.value = EditarUsuarioUiState(
@@ -40,8 +40,8 @@ class EditarUsuarioViewModel(application: Application) : AndroidViewModel(applic
     fun validarFormulario(): Boolean {
         val estadoActual = _estado.value
         val errores = EditarUsuarioErrores(
-            nombre = if (estadoActual.nombre.length < 3) "Debe tener al menos 3 letras" else null,
-            clave = if (estadoActual.clave.length < 6) "Debe tener al menos 6 caracteres" else null
+            nombre = Validaciones.validarNombre(estadoActual.nombre),
+            clave = Validaciones.validarClave(estadoActual.clave)
         )
 
         val hayErrores = listOfNotNull(
@@ -65,5 +65,15 @@ class EditarUsuarioViewModel(application: Application) : AndroidViewModel(applic
         )
         repository.actualizar(usuarioEditado)
         return usuarioEditado
+    }
+
+    class Factory(private val repository: UsuarioRepository) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(EditarUsuarioViewModel::class.java)) {
+                return EditarUsuarioViewModel(repository) as T
+            }
+            throw IllegalArgumentException("ViewModel no reconocido: ${modelClass.name}")
+        }
     }
 }

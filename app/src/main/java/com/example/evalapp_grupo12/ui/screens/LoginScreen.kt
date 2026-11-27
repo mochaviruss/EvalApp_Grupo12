@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.evalapp_grupo12.viewmodel.LoginViewModel
 import com.example.evalapp_grupo12.viewmodel.SesionViewModel
@@ -36,7 +35,7 @@ import com.example.evalapp_grupo12.viewmodel.SesionViewModel
 fun LoginScreen(
     navController: NavController,
     sesionViewModel: SesionViewModel,
-    viewModel: LoginViewModel = viewModel()
+    viewModel: LoginViewModel
 ) {
     val estado by viewModel.estado.collectAsState()
 
