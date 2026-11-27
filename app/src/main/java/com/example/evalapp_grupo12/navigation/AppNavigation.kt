@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.evalapp_grupo12.data.AlumnoRepository
+import com.example.evalapp_grupo12.data.ClimaRepository
 import com.example.evalapp_grupo12.data.EvaluacionRepository
 import com.example.evalapp_grupo12.data.RetrofitClient
 import com.example.evalapp_grupo12.data.RubricaRepository
@@ -29,6 +30,7 @@ import com.example.evalapp_grupo12.ui.screens.RegistroScreen
 import com.example.evalapp_grupo12.ui.screens.RubricasScreen
 import com.example.evalapp_grupo12.ui.screens.VisorScreen
 import com.example.evalapp_grupo12.viewmodel.AlumnoViewModel
+import com.example.evalapp_grupo12.viewmodel.ClimaViewModel
 import com.example.evalapp_grupo12.viewmodel.DocumentoViewModel
 import com.example.evalapp_grupo12.viewmodel.EditarUsuarioViewModel
 import com.example.evalapp_grupo12.viewmodel.EvaluacionViewModel
@@ -65,6 +67,10 @@ fun AppNavigation() {
         factory = EvaluacionViewModel.Factory(evaluacionRepository)
     )
 
+    val climaViewModel: ClimaViewModel = viewModel(
+        factory = ClimaViewModel.Factory(ClimaRepository(RetrofitClient.climaApi))
+    )
+
     NavHost(
         navController = navController,
         startDestination = "bienvenida"
@@ -81,7 +87,7 @@ fun AppNavigation() {
             RegistroScreen(navController, registroViewModel)
         }
         composable("inicio") {
-            InicioScreen(navController, sesionViewModel, evaluacionViewModel, evaluarViewModel)
+            InicioScreen(navController, sesionViewModel, evaluacionViewModel, evaluarViewModel, climaViewModel)
         }
         composable("evaluar") {
             EvaluarScreen(navController, sesionViewModel, evaluarViewModel, alumnoViewModel, rubricaViewModel)
