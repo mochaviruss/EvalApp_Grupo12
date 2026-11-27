@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.evalapp_grupo12.data.AlumnoRepository
 import com.example.evalapp_grupo12.data.RetrofitClient
+import com.example.evalapp_grupo12.data.RubricaRepository
 import com.example.evalapp_grupo12.data.UsuarioDaoSQLite
 import com.example.evalapp_grupo12.data.UsuarioRepository
 import com.example.evalapp_grupo12.ui.screens.AlumnosScreen
@@ -15,16 +16,19 @@ import com.example.evalapp_grupo12.ui.screens.BienvenidaScreen
 import com.example.evalapp_grupo12.ui.screens.CargarScreen
 import com.example.evalapp_grupo12.ui.screens.CerrarSesionScreen
 import com.example.evalapp_grupo12.ui.screens.DocumentosScreen
+import com.example.evalapp_grupo12.ui.screens.EditarRubricaScreen
 import com.example.evalapp_grupo12.ui.screens.EditarUsuarioScreen
 import com.example.evalapp_grupo12.ui.screens.InicioScreen
 import com.example.evalapp_grupo12.ui.screens.LoginScreen
 import com.example.evalapp_grupo12.ui.screens.RegistroScreen
+import com.example.evalapp_grupo12.ui.screens.RubricasScreen
 import com.example.evalapp_grupo12.ui.screens.VisorScreen
 import com.example.evalapp_grupo12.viewmodel.AlumnoViewModel
 import com.example.evalapp_grupo12.viewmodel.DocumentoViewModel
 import com.example.evalapp_grupo12.viewmodel.EditarUsuarioViewModel
 import com.example.evalapp_grupo12.viewmodel.LoginViewModel
 import com.example.evalapp_grupo12.viewmodel.RegistroViewModel
+import com.example.evalapp_grupo12.viewmodel.RubricaViewModel
 import com.example.evalapp_grupo12.viewmodel.SesionViewModel
 import com.example.evalapp_grupo12.viewmodel.VisorViewModel
 
@@ -41,6 +45,9 @@ fun AppNavigation() {
 
     val alumnoViewModel: AlumnoViewModel = viewModel(
         factory = AlumnoViewModel.Factory(AlumnoRepository(RetrofitClient.api))
+    )
+    val rubricaViewModel: RubricaViewModel = viewModel(
+        factory = RubricaViewModel.Factory(RubricaRepository(RetrofitClient.api))
     )
 
     NavHost(
@@ -60,6 +67,12 @@ fun AppNavigation() {
         }
         composable("inicio") {
             InicioScreen(navController, sesionViewModel)
+        }
+        composable("rubricas") {
+            RubricasScreen(navController, sesionViewModel, rubricaViewModel)
+        }
+        composable("editar_rubrica") {
+            EditarRubricaScreen(navController, sesionViewModel, rubricaViewModel)
         }
         composable("alumnos") {
             AlumnosScreen(navController, sesionViewModel, alumnoViewModel)

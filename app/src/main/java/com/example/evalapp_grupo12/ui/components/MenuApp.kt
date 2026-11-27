@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
@@ -43,6 +44,7 @@ data class Seccion(
 
 val secciones = listOf(
     Seccion("Inicio", "inicio", Icons.Filled.Home),
+    Seccion("Rúbricas", "rubricas", Icons.Filled.Checklist),
     Seccion("Alumnos", "alumnos", Icons.Filled.Groups)
 )
 
