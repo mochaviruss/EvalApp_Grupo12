@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.evalapp_grupo12.viewmodel.EditarUsuarioViewModel
 import com.example.evalapp_grupo12.viewmodel.SesionViewModel
@@ -43,7 +42,7 @@ import com.example.evalapp_grupo12.viewmodel.SesionViewModel
 fun EditarUsuarioScreen(
     navController: NavController,
     sesionViewModel: SesionViewModel,
-    viewModel: EditarUsuarioViewModel = viewModel()
+    viewModel: EditarUsuarioViewModel
 ) {
     val usuario by sesionViewModel.usuario.collectAsState()
     val estado by viewModel.estado.collectAsState()

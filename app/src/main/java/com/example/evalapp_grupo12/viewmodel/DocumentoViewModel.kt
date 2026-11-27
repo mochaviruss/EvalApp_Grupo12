@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.evalapp_grupo12.data.DocumentoRepository
+import com.example.evalapp_grupo12.logic.Validaciones
 import com.example.evalapp_grupo12.model.CargarErrores
 import com.example.evalapp_grupo12.model.CargarUiState
 import com.example.evalapp_grupo12.model.Documento
@@ -80,8 +81,8 @@ class DocumentoViewModel(application: Application) : AndroidViewModel(applicatio
     fun validarFormulario(): Boolean {
         val estadoActual = _formulario.value
         val errores = CargarErrores(
-            titulo = if (estadoActual.titulo.length < 3) "El título debe tener al menos 3 caracteres" else null,
-            archivo = if (estadoActual.uri.isEmpty()) "Selecciona un archivo PDF o Word" else null
+            titulo = Validaciones.validarTitulo(estadoActual.titulo),
+            archivo = Validaciones.validarArchivo(estadoActual.uri)
         )
 
         val hayErrores = listOfNotNull(errores.titulo, errores.archivo).isNotEmpty()

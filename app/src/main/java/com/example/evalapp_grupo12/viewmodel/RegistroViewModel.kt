@@ -1,21 +1,21 @@
 package com.example.evalapp_grupo12.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.evalapp_grupo12.data.UsuarioRepository
+import com.example.evalapp_grupo12.logic.Validaciones
 import com.example.evalapp_grupo12.model.RegistroErrores
 import com.example.evalapp_grupo12.model.RegistroUiState
 import com.example.evalapp_grupo12.model.Usuario
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class RegistroViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = UsuarioRepository(application)
+class RegistroViewModel(private val repository: UsuarioRepository) : ViewModel() {
 
     private val _estado = MutableStateFlow(RegistroUiState())
-    val estado: StateFlow<RegistroUiState> = _estado
+    val estado: StateFlow<RegistroUiState> = _estado.asStateFlow()
 
     fun onNombreChange(valor: String) {
         _estado.update { it.copy(nombre = valor, errores = it.errores.copy(nombre = null)) }
@@ -40,15 +40,15 @@ class RegistroViewModel(application: Application) : AndroidViewModel(application
     fun validarFormulario(): Boolean {
         val estadoActual = _estado.value
         val errores = RegistroErrores(
-            nombre = if (estadoActual.nombre.length < 3) "Debe tener al menos 3 letras" else null,
+            nombre = Validaciones.validarNombre(estadoActual.nombre),
             correo = when {
-                !estadoActual.correo.contains("@") -> "Correo inválido"
+                Validaciones.validarCorreo(estadoActual.correo) != null -> "Correo inválido"
                 repository.existeCorreo(estadoActual.correo) -> "Este correo ya está registrado"
                 else -> null
             },
-            clave = if (estadoActual.clave.length < 6) "Debe tener al menos 6 caracteres" else null,
-            confirmarClave = if (estadoActual.confirmarClave != estadoActual.clave) "Las contraseñas no coinciden" else null,
-            rol = if (estadoActual.rol.isEmpty()) "Selecciona un rol" else null
+            clave = Validaciones.validarClave(estadoActual.clave),
+            confirmarClave = Validaciones.validarConfirmacion(estadoActual.clave, estadoActual.confirmarClave),
+            rol = Validaciones.validarRol(estadoActual.rol)
         )
 
         val hayErrores = listOfNotNull(
@@ -79,5 +79,15 @@ class RegistroViewModel(application: Application) : AndroidViewModel(application
         )
         _estado.value = RegistroUiState()
         return true
+    }
+
+    class Factory(private val repository: UsuarioRepository) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(RegistroViewModel::class.java)) {
+                return RegistroViewModel(repository) as T
+            }
+            throw IllegalArgumentException("ViewModel no reconocido: ${modelClass.name}")
+        }
     }
 }

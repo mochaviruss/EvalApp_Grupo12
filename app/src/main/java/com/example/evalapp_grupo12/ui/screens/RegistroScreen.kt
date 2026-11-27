@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.evalapp_grupo12.viewmodel.RegistroViewModel
 
@@ -41,7 +40,7 @@ import com.example.evalapp_grupo12.viewmodel.RegistroViewModel
 @Composable
 fun RegistroScreen(
     navController: NavController,
-    viewModel: RegistroViewModel = viewModel()
+    viewModel: RegistroViewModel
 ) {
     val estado by viewModel.estado.collectAsState()
     val contexto = LocalContext.current
