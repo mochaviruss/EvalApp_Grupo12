@@ -17,10 +17,12 @@ import com.example.evalapp_grupo12.ui.screens.AplicarRubricaScreen
 import com.example.evalapp_grupo12.ui.screens.BienvenidaScreen
 import com.example.evalapp_grupo12.ui.screens.CargarScreen
 import com.example.evalapp_grupo12.ui.screens.CerrarSesionScreen
+import com.example.evalapp_grupo12.ui.screens.DetalleEvaluacionScreen
 import com.example.evalapp_grupo12.ui.screens.DocumentosScreen
 import com.example.evalapp_grupo12.ui.screens.EditarRubricaScreen
 import com.example.evalapp_grupo12.ui.screens.EditarUsuarioScreen
 import com.example.evalapp_grupo12.ui.screens.EvaluarScreen
+import com.example.evalapp_grupo12.ui.screens.HistorialScreen
 import com.example.evalapp_grupo12.ui.screens.InicioScreen
 import com.example.evalapp_grupo12.ui.screens.LoginScreen
 import com.example.evalapp_grupo12.ui.screens.RegistroScreen
@@ -29,6 +31,7 @@ import com.example.evalapp_grupo12.ui.screens.VisorScreen
 import com.example.evalapp_grupo12.viewmodel.AlumnoViewModel
 import com.example.evalapp_grupo12.viewmodel.DocumentoViewModel
 import com.example.evalapp_grupo12.viewmodel.EditarUsuarioViewModel
+import com.example.evalapp_grupo12.viewmodel.EvaluacionViewModel
 import com.example.evalapp_grupo12.viewmodel.EvaluarViewModel
 import com.example.evalapp_grupo12.viewmodel.LoginViewModel
 import com.example.evalapp_grupo12.viewmodel.RegistroViewModel
@@ -58,6 +61,9 @@ fun AppNavigation() {
     val evaluarViewModel: EvaluarViewModel = viewModel(
         factory = EvaluarViewModel.Factory(evaluacionRepository)
     )
+    val evaluacionViewModel: EvaluacionViewModel = viewModel(
+        factory = EvaluacionViewModel.Factory(evaluacionRepository)
+    )
 
     NavHost(
         navController = navController,
@@ -75,13 +81,19 @@ fun AppNavigation() {
             RegistroScreen(navController, registroViewModel)
         }
         composable("inicio") {
-            InicioScreen(navController, sesionViewModel)
+            InicioScreen(navController, sesionViewModel, evaluacionViewModel, evaluarViewModel)
         }
         composable("evaluar") {
             EvaluarScreen(navController, sesionViewModel, evaluarViewModel, alumnoViewModel, rubricaViewModel)
         }
         composable("aplicar_rubrica") {
             AplicarRubricaScreen(navController, sesionViewModel, evaluarViewModel)
+        }
+        composable("historial") {
+            HistorialScreen(navController, sesionViewModel, evaluacionViewModel)
+        }
+        composable("detalle_evaluacion") {
+            DetalleEvaluacionScreen(navController, sesionViewModel, evaluacionViewModel, evaluarViewModel)
         }
         composable("rubricas") {
             RubricasScreen(navController, sesionViewModel, rubricaViewModel)
