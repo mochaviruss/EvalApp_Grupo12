@@ -4,24 +4,22 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.UploadFile
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,10 +29,22 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.evalapp_grupo12.model.Usuario
 import kotlinx.coroutines.launch
+
+data class Seccion(
+    val titulo: String,
+    val ruta: String,
+    val icono: ImageVector
+)
+
+val secciones = listOf(
+    Seccion("Inicio", "inicio", Icons.Filled.Home),
+    Seccion("Alumnos", "alumnos", Icons.Filled.Groups)
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +57,14 @@ fun MenuApp(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    fun irA(ruta: String) {
+        scope.launch { drawerState.close() }
+        navController.navigate(ruta) {
+            popUpTo("inicio")
+            launchSingleTop = true
+        }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -58,45 +76,34 @@ fun MenuApp(
                 )
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-                NavigationDrawerItem(
-                    label = { Text("Inicio") },
-                    icon = { Icon(Icons.Filled.Home, contentDescription = null) },
-                    selected = titulo == "Inicio",
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        navController.navigate("inicio") {
-                            popUpTo("inicio") { inclusive = true }
-                        }
-                    }
-                )
+                for (seccion in secciones) {
+                    NavigationDrawerItem(
+                        label = { Text(seccion.titulo) },
+                        icon = { Icon(seccion.icono, contentDescription = null) },
+                        selected = titulo == seccion.titulo,
+                        onClick = { irA(seccion.ruta) }
+                    )
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
                 NavigationDrawerItem(
                     label = { Text("Mis documentos") },
                     icon = { Icon(Icons.Filled.Folder, contentDescription = null) },
                     selected = titulo == "Mis documentos",
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        navController.navigate("documentos") {
-                            popUpTo("inicio")
-                        }
-                    }
+                    onClick = { irA("documentos") }
                 )
                 NavigationDrawerItem(
                     label = { Text("Cargar documento") },
                     icon = { Icon(Icons.Filled.UploadFile, contentDescription = null) },
                     selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        navController.navigate("cargar")
-                    }
+                    onClick = { irA("cargar") }
                 )
                 NavigationDrawerItem(
                     label = { Text("Editar mis datos") },
                     icon = { Icon(Icons.Filled.Person, contentDescription = null) },
                     selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        navController.navigate("editar_usuario")
-                    }
+                    onClick = { irA("editar_usuario") }
                 )
                 NavigationDrawerItem(
                     label = { Text("Cerrar sesión") },
@@ -136,33 +143,16 @@ fun MenuApp(
                 )
             },
             bottomBar = {
-                BottomAppBar(
-                    actions = {
-                        IconButton(onClick = {
-                            navController.navigate("inicio") {
-                                popUpTo("inicio") { inclusive = true }
-                            }
-                        }) {
-                            Icon(Icons.Filled.Home, contentDescription = "Inicio")
-                        }
-                        IconButton(onClick = {
-                            navController.navigate("documentos") {
-                                popUpTo("inicio")
-                            }
-                        }) {
-                            Icon(Icons.Filled.Folder, contentDescription = "Mis documentos")
-                        }
-                    },
-                    floatingActionButton = {
-                        FloatingActionButton(
-                            onClick = { navController.navigate("cargar") },
-                            containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
-                            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
-                        ) {
-                            Icon(Icons.Filled.Add, contentDescription = "Cargar documento")
-                        }
+                NavigationBar {
+                    for (seccion in secciones) {
+                        NavigationBarItem(
+                            selected = titulo == seccion.titulo,
+                            onClick = { irA(seccion.ruta) },
+                            icon = { Icon(seccion.icono, contentDescription = null) },
+                            label = { Text(seccion.titulo) }
+                        )
                     }
-                )
+                }
             }
         ) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
